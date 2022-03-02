@@ -1,11 +1,14 @@
 {
-  "name": "postpone.js",
+  "name": "@lorisleiva/postpone",
   "description": "Handle asynchronous pipelines",
   "private": false,
   "version": "0.1.0",
+  "main": "./dist/postpone.umd.js",
+  "module": "./dist/postpone.es.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "vite build && tsc --emitDeclarationOnly",
     "preview": "vite preview"
   },
   "devDependencies": {
