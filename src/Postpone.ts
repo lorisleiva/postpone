@@ -1,5 +1,8 @@
-type ArrayElement<ArrayType> = 
-  ArrayType extends readonly (infer ElementType)[] ? ElementType : never;
+import { chunk } from "./utils";
+
+type ArrayElement<ArrayType> = ArrayType extends readonly (infer ElementType)[] ? ElementType : never;
+type AsArray<T> = ArrayElement<T>[];
+type ArrayCallback<T, U> = (item: ArrayElement<T>, index: number, array: AsArray<T>) => U
 
 export class Postpone<T> {
   protected readonly value: () => Promise<T>;
@@ -36,17 +39,19 @@ export class Postpone<T> {
     return this.tap(v => console.log(v));
   }
 
-  map<U>(
-    this: Postpone<ArrayElement<T>[]>,
-    callback: (item: ArrayElement<T>, index: number, array: ArrayElement<T>[]) => U,
-  ): Postpone<U[]> {
+  map<U>(this: Postpone<AsArray<T>>, callback: ArrayCallback<T, U>): Postpone<U[]> {
     return this.pipe(t => t.map(callback));
   }
 
-  filter(
-    this: Postpone<ArrayElement<T>[]>,
-    callback: (item: ArrayElement<T>, index: number, array: ArrayElement<T>[]) => unknown,
-  ): Postpone<ArrayElement<T>[]> {
+  flatMap<U>(this: Postpone<AsArray<T>>, callback: ArrayCallback<T, U[]>): Postpone<U[]> {
+    return this.pipe(t => t.flatMap(callback));
+  }
+
+  chunk(this: Postpone<AsArray<T>>, size: number): Postpone<AsArray<T>[]> {
+    return this.pipe(t => chunk(t, size));
+  }
+
+  filter<U extends T>(this: Postpone<AsArray<T>>, callback: ArrayCallback<T, unknown>): Postpone<AsArray<U>> {
     return this.pipe(t => t.filter(callback));
   }
 
