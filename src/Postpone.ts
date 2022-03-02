@@ -1,4 +1,4 @@
-type ArrayElement<ArrayType extends readonly unknown[]> = 
+type ArrayElement<ArrayType> = 
   ArrayType extends readonly (infer ElementType)[] ? ElementType : never;
 
 export class Postpone<T> {
@@ -12,31 +12,38 @@ export class Postpone<T> {
     return new this(value);
   }
 
-  pipe<U>(callback: (value: T) => U): Postpone<U> {
-    return Postpone.make(async () => callback(await this.value()));
+  asyncPipe<U>(callback: (value: Promise<T>) => Promise<U>): Postpone<U> {
+    return Postpone.make(async () => callback(this.value()));
   }
 
-  tap(callback: (value: T) => unknown): Postpone<T> {
-    return Postpone.make(async () => {
-      const value = await this.value();
+  pipe<U>(callback: (value: T) => U): Postpone<U> {
+    return this.asyncPipe(async (value) => callback(await value));
+  }
+
+  asyncTap(callback: (value: Promise<T>) => Promise<unknown>): Postpone<T> {
+    return this.asyncPipe(async (value) => {
       callback(value);
 
       return value;
     });
   }
 
+  tap(callback: (value: T) => unknown): Postpone<T> {
+    return this.asyncTap(async (value) => callback(await value));
+  }
+
   log(): Postpone<T> {
     return this.tap(v => console.log(v));
   }
 
-  map<T extends readonly unknown[], U>(
+  map<U>(
     this: Postpone<ArrayElement<T>[]>,
     callback: (item: ArrayElement<T>, index: number, array: ArrayElement<T>[]) => U,
   ): Postpone<U[]> {
     return this.pipe(t => t.map(callback));
   }
 
-  filter<T extends readonly unknown[]>(
+  filter(
     this: Postpone<ArrayElement<T>[]>,
     callback: (item: ArrayElement<T>, index: number, array: ArrayElement<T>[]) => unknown,
   ): Postpone<ArrayElement<T>[]> {
