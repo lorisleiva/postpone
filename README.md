@@ -4,13 +4,13 @@ Small TypeScript library making it easier to handle complex asynchronous tasks.
 ## Installation
 
 ```shell
-npm install postpone
+npm install postpone.js
 ```
 
 ## Usage
 
 ```ts
-import { Postpone } from "postpone";
+import { Postpone } from "postpone.js";
 
 Postpone.make(async () => "Hello")
   .tap(v => console.log(v))

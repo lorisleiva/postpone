@@ -1,5 +1,5 @@
 {
-  "name": "postpone",
+  "name": "postpone.js",
   "description": "Handle asynchronous pipelines",
   "private": false,
   "version": "0.1.0",
