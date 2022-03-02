@@ -2,7 +2,7 @@
   "name": "@lorisleiva/postpone",
   "description": "Handle asynchronous pipelines",
   "private": false,
-  "version": "0.2.0",
+  "version": "0.2.1",
   "main": "./dist/postpone.umd.js",
   "module": "./dist/postpone.es.js",
   "types": "./dist/index.d.ts",
